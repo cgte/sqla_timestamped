@@ -11,15 +11,20 @@ from sqlalchemy.ext.declarative import declarative_base
 
 Base = declarative_base()
 
-from sqlalchemt import Column, Integer, String
+from sqlalchemy import Column, Integer, String
 
 
 class reprmixin:
     def __repr__(self):
-        return f"{self.__class__.__name}({self.__dict__})"
+        data = {k: v for k, v in self.__dict__.items() if not k.startswith("_")}
+        return f"{self.__class__.__name__}({data})"
 
 
-class User(Base, reprmixin):
+class BornMixin:
+    born = Column(String, default="Unknown")
+
+
+class User(Base, BornMixin, reprmixin):
     __tablename__ = "users"
 
     user_id = Column(Integer, primary_key=True)
@@ -29,3 +34,14 @@ class User(Base, reprmixin):
 
 
 from pprint import pprint as print
+
+print(User.__table__)
+
+
+# Create the schema
+
+Base.metadata.create_all(engine)
+
+colin = User(name="Colin", fullname="Colin Goutte", nickname="Chouchou")
+
+print(repr(colin))
