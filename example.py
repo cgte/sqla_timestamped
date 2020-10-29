@@ -44,17 +44,20 @@ now = datetime.now
 tz = True
 
 
-class Change(Base, reprmixin):
-    __tablename__ = "changes"
-
-    change_id = Column(Integer, primary_key=True)
-    name = Column(String)
+class TimeStampedMixin:
     if tz:
         srv_def_ts = Column(TIMESTAMP, default=now)
         srv_upd_ts = Column(TIMESTAMP, onupdate=now)
     else:
         srv_def_ts = Column(TIMESTAMP, default=func.now())
         srv_upd_ts = Column(TIMESTAMP, onupdate=func.now())
+
+
+class Change(reprmixin, TimeStampedMixin, Base):
+    __tablename__ = "changes"
+
+    change_id = Column(Integer, primary_key=True)
+    name = Column(String)
 
 
 from pprint import pprint as print
